@@ -3,6 +3,7 @@ import Title from "../components/Title";
 import { getUserOrdersAPI, getSingleProductAPI, cancelOrderAPI } from '../services/allAPI';
 import { toast } from 'react-toastify';
 import { ShopContext } from '../contexts/ShopContext';
+import Footer from '../components/Footer';
 
 const OrdersComponent = () => {
   const { books } = useContext(ShopContext);
@@ -81,16 +82,19 @@ const OrdersComponent = () => {
       fetchBookDetails();
     }
   }, [orders, books, bookDetailsMap]);
+  const filteredOrders = filter === "All" 
+  ? [...orders].sort((a, b) => new Date(b.date) - new Date(a.date)) 
+  : orders
+      .filter(order => order.status === filter)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-  const filteredOrders = filter === "All" ? orders : orders.filter(order => order.status === filter);
+if (loading) return <div>Loading...</div>;
 
-  if (loading) return <div>Loading...</div>;
-
-  return (
+return (
+  <>
     <div className="bg-primary pt-24 px-10 space-y-6 min-h-screen">
       <Title title1="Orders " title2="List" paraStyles="hidden" titleStyles="h3" />
       
-      {/* Filter Dropdown */}
       <div className="mb-4">
         <select
           value={filter}
@@ -104,7 +108,7 @@ const OrdersComponent = () => {
           <option value="Cancelled">Cancelled</option>
         </select>
       </div>
-
+  
       {filteredOrders.length === 0 ? (
         <div className="text-center text-gray-500">No orders available.</div>
       ) : (
@@ -145,17 +149,22 @@ const OrdersComponent = () => {
                 return null;
               })}
             </div>
-           { status=="Order Placed" && <button
-              onClick={() => cancelOrder(_id)}
-            className='btn-secondary h-10'
-            >
-              Cancel
-            </button>}
+            {status === "Order Placed" && (
+              <button
+                onClick={() => cancelOrder(_id)}
+                className="btn-secondary h-10"
+              >
+                Cancel
+              </button>
+            )}
           </div>
         ))
       )}
     </div>
-  );
+    <Footer/>
+  </>
+);
+
 };
 
 export default OrdersComponent;

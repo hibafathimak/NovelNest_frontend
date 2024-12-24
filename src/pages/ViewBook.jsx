@@ -95,9 +95,7 @@ const ViewBook = () => {
   };
 
   const handleAddToWishlist = () => {
-    if (!token) return toast.error('Please log in to add to wishlist!');
     addToWishlist(book._id);
-    toast.success('Added to wishlist!');
   };
 
   if (loading || !book) return <div>Loading...</div>;
@@ -135,16 +133,24 @@ const ViewBook = () => {
                 <button onClick={() => updateQuantity(book._id, quantityInCart + 1)} className="bg-gray-200 hover:bg-gray-300 w-10 h-10 flex items-center justify-center rounded-full" disabled={book.stock === 'out of stock'}>+</button>
               </div>
             </div>
-            <div className="flex justify-between items-center mt-4">
-              <button onClick={() => addToCart(book._id)} className={`px-6 py-3 rounded-lg flex items-center space-x-2 shadow-lg ${book.stock === 'out of stock' ? 'bg-gray-400 cursor-not-allowed' : 'bg-secondary text-white hover:bg-secondary-dark'}`} disabled={book.stock === 'out of stock'}>
+            <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-4 sm:space-y-0 sm:space-x-4">
+              <button
+                onClick={() => addToCart(book._id)}
+                className={`px-6 py-3 w-full sm:w-auto rounded-lg flex items-center justify-center space-x-2 shadow-lg ${book.stock === 'out of stock' ? 'bg-gray-400 cursor-not-allowed' : 'bg-secondary text-white hover:bg-secondary-dark'}`}
+                disabled={book.stock === 'out of stock'}
+              >
                 <TbShoppingBagPlus className="text-xl" />
                 <span>{book.stock === 'out of stock' ? 'Unavailable' : 'Add to Cart'}</span>
               </button>
-              <button onClick={handleAddToWishlist} className="mt-4 px-6 py-3 rounded-lg flex items-center space-x-2 shadow-lg bg-tertiary text-white">
+              <button
+                onClick={handleAddToWishlist}
+                className="px-6 py-3 w-full sm:w-auto rounded-lg flex items-center justify-center space-x-2 shadow-lg bg-tertiary text-white"
+              >
                 <RiHeartLine className="text-xl" />
                 <span>Add to Wishlist</span>
               </button>
             </div>
+
           </div>
         </div>
 
@@ -159,10 +165,10 @@ const ViewBook = () => {
                 {review.user === userId && (
                   <div className="flex space-x-4">
                     <button onClick={() => { setEditingReview(review); setReviewText(review.comment); setRating(review.rating); }} className="text-secondary">
-                      <RiEdit2Line className="inline-block" /> 
+                      <RiEdit2Line className="inline-block" />
                     </button>
                     <button onClick={() => handleDeleteReview(review._id)} className="text-tertiary">
-                      <RiDeleteBinLine className="inline-block" /> 
+                      <RiDeleteBinLine className="inline-block" />
                     </button>
                   </div>
                 )}
