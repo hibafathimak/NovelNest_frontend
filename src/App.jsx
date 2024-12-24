@@ -43,7 +43,7 @@ function App() {
         <Route path="/books/:bookId" element={<ViewBook />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/place-order" element={<PlaceOrder />}/>
+        <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/admin/*" element={
           <ProtectedRoute isAuthenticated={isAuthenticated} requiredRole="admin" userRole={userRole}>
