@@ -51,72 +51,77 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      console.log("Starting login process...");
       const response = await loginAPI({ email, password });
   
       if (response.status === 200) {
         toast.success("Login successful");
         const token = response.data.token;
         const userId = response.data.user?._id;
+        const userRole = response.data.user.role;
         const reqHeader = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-        };  
+        };
+  
         sessionStorage.setItem("token", token);
         sessionStorage.setItem("userId", userId);
-        sessionStorage.setItem("user", JSON.stringify(response.data.user));
-        sessionStorage.setItem("role", response.data.user.role);
-        navigate(response.data.user.role === "admin" ? "/admin" : "/");
+        sessionStorage.setItem("role", userRole);
   
-        const sessionCart = sessionStorage.getItem("cartItems");
-        if (sessionCart) {
-          try {
-            const cartItems = JSON.parse(sessionCart);
-            console.log("Syncing cart...");
-  
-            const cartResponse = await addCartToUserAPI(
-              userId,
-              { cartData: cartItems },
-              reqHeader
-            );
-  
-            if (cartResponse.status === 200) {
-              console.log("Cart synced successfully.");
-            } else {
-              console.warn("Cart sync incomplete or failed.");
-            }
-          } catch (cartError) {
-            console.error("Cart sync error:", cartError);
-          } finally {
-            console.log("Removing cartItems from session storage.");
-            sessionStorage.removeItem("cartItems");
-          }
+        if (userRole !== "admin") {
+          sessionStorage.setItem("user", JSON.stringify(response.data.user));
         }
   
-        const sessionWishlist = sessionStorage.getItem("wishlistItems");
-        if (sessionWishlist) {
-          try {
-            const wishlistItems = JSON.parse(sessionWishlist);
-            console.log("Syncing wishlist...");
+        navigate(userRole === "admin" ? "/admin" : "/");
   
-            const wishlistResponse = await addWishlistToUserAPI(
-              userId,
-              { wishlistData: wishlistItems },
-              reqHeader
-            );
-            console.log(wishlistItems);
-            
-            if (wishlistResponse.status === 200) {
-              console.log("Wishlist synced successfully.");
-              sessionStorage.removeItem("wishlistItems"); // Remove wishlist from sessionStorage after syncing
-            } else {
-              console.warn("Wishlist sync incomplete or failed.");
+        if (userRole === "user") {
+          const sessionCart = sessionStorage.getItem("cartItems");
+          if (sessionCart) {
+            try {
+              const cartItems = JSON.parse(sessionCart);
+              console.log("Syncing cart...");
+  
+              const cartResponse = await addCartToUserAPI(
+                userId,
+                { cartData: cartItems },
+                reqHeader
+              );
+  
+              if (cartResponse.status === 200) {
+                console.log("Cart synced successfully.");
+              } else {
+                console.warn("Cart sync incomplete or failed.");
+              }
+            } catch (cartError) {
+              console.error("Cart sync error:", cartError);
+            } finally {
+              sessionStorage.removeItem("cartItems");
             }
-          } catch (wishlistError) {
-            console.error("Wishlist sync error:", wishlistError);
+          }
+  
+          const sessionWishlist = sessionStorage.getItem("wishlistItems");
+          if (sessionWishlist) {
+            try {
+              const wishlistItems = JSON.parse(sessionWishlist);
+              console.log("Syncing wishlist...");
+  
+              const wishlistResponse = await addWishlistToUserAPI(
+                userId,
+                { wishlistData: wishlistItems },
+                reqHeader
+              );
+  
+              if (wishlistResponse.status === 200) {
+                console.log("Wishlist synced successfully.");
+              } else {
+                console.warn("Wishlist sync incomplete or failed.");
+              }
+            } catch (wishlistError) {
+              console.error("Wishlist sync error:", wishlistError);
+            } finally {
+              sessionStorage.removeItem("wishlistItems");
+            }
           }
         }
-
       } else {
         toast.error("Login failed. Invalid credentials.");
       }
@@ -125,6 +130,8 @@ const Login = () => {
       toast.error("Login failed. Please check your credentials.");
     }
   };
+  
+  
   
 
   const handleSubmit = (e) => {
