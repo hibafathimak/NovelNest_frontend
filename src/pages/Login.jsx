@@ -61,7 +61,12 @@ const Login = () => {
         const reqHeader = {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-        };
+        };  
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("userId", userId);
+        sessionStorage.setItem("user", JSON.stringify(response.data.user));
+        sessionStorage.setItem("role", response.data.user.role);
+        navigate(response.data.user.role === "admin" ? "/admin" : "/");
   
         const sessionCart = sessionStorage.getItem("cartItems");
         if (sessionCart) {
@@ -111,12 +116,7 @@ const Login = () => {
             console.error("Wishlist sync error:", wishlistError);
           }
         }
-  
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("userId", userId);
-        sessionStorage.setItem("user", JSON.stringify(response.data.user));
-        sessionStorage.setItem("role", response.data.user.role);
-        navigate(response.data.user.role === "admin" ? "/admin" : "/");
+
       } else {
         toast.error("Login failed. Invalid credentials.");
       }
