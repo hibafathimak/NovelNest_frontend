@@ -69,12 +69,10 @@ const Login = () => {
   
         if (userRole !== "admin") {
           sessionStorage.setItem("user", JSON.stringify(response.data.user));
-        }
-        if(userRole === 'admin'){
-          navigate('/admin/')
-        }else{
           navigate("/");
-
+        }
+        else if(userRole === 'admin'){
+          navigate('/admin')
         }
   
         if (userRole === "user") {
