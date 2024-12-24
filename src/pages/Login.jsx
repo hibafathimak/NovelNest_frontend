@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import loginImg from "../assets/login.png";
 import Header from '../components/Header';
 import { addCartToUserAPI, addWishlistToUserAPI, loginAPI, registerAPI } from '../services/allAPI';
@@ -70,8 +70,12 @@ const Login = () => {
         if (userRole !== "admin") {
           sessionStorage.setItem("user", JSON.stringify(response.data.user));
         }
-  
-        navigate(userRole === "admin" ? "/admin" : "/");
+        if(userRole === 'admin'){
+          navigate('/admin')
+        }else{
+          navigate("/");
+
+        }
   
         if (userRole === "user") {
           const sessionCart = sessionStorage.getItem("cartItems");
