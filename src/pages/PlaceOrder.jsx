@@ -44,18 +44,20 @@ const PlaceOrder = () => {
       toast.error("Last name can only contain letters.");
       return false;
     }
-    if (!/^[a-zA-Z]+$/.test(country)) {
-      toast.error("Country name can only contain letters.");
+    
+    if (!/^[a-zA-Z\s]+$/.test(country)) {
+      toast.error("Country name can only contain letters and spaces.");
       return false;
     }
-    if (!/^[a-zA-Z]+$/.test(state)) {
-      toast.error("State name can only contain letters.");
+    if (!/^[a-zA-Z\s]+$/.test(state)) {
+      toast.error("State name can only contain letters and spaces.");
       return false;
     }
-    if (!/^[a-zA-Z]+$/.test(city)) {
-      toast.error("City name can only contain letters.");
+    if (!/^[a-zA-Z\s]+$/.test(city)) {
+      toast.error("City name can only contain letters and spaces.");
       return false;
     }
+    
     if (!/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/.test(email)) {
       toast.error("Please enter a valid email address.");
       return false;
@@ -70,6 +72,7 @@ const PlaceOrder = () => {
     }
     return true;
   };
+  
 
   useEffect(() => {
     if (method === 'cod') {
