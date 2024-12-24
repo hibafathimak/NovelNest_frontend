@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import bg from '../assets/book3.png';
-import book1 from '../assets/book_4.png';
-import book2 from '../assets/book_5.png';
-import book4 from '../assets/book_7.png';
+import book1 from '../assets/book_4.jpg';
+import book2 from '../assets/book_5.jpg';
+import book4 from '../assets/book_7.jpg';
 import pencil from '../assets/pencil.png';
 
 const Hero = () => {
