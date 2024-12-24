@@ -8,8 +8,10 @@ const AdminOrders = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchOrders = async () => {
+    setIsLoading(true);
     const token = sessionStorage.getItem("token");
     const role = sessionStorage.getItem('role');
     if (token && role === "admin") {
@@ -20,11 +22,11 @@ const AdminOrders = () => {
         const response = await getAllOrdersAPI(reqHeader);
         if (response.status === 200) {
           setOrders(response.data);
-        } else {
-          console.error("Failed to fetch orders");
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -53,8 +55,6 @@ const AdminOrders = () => {
               order._id === id ? { ...order, status: updatedStatus } : order
             )
           );
-        } else {
-          console.error("Failed to update order status");
         }
       } catch (error) {
         console.error("Error updating order status:", error);
@@ -63,6 +63,7 @@ const AdminOrders = () => {
   };
 
   const openModal = async (orderId) => {
+    setIsLoading(true);
     const token = sessionStorage.getItem("token");
     if (token) {
       try {
@@ -86,14 +87,12 @@ const AdminOrders = () => {
 
           setSelectedOrder({ ...orderData, items: itemDetails });
           setIsModalOpen(true);
-        } else {
-          console.error("Failed to fetch order details", response);
         }
       } catch (error) {
         console.error("Error fetching order details:", error);
+      } finally {
+        setIsLoading(false);
       }
-    } else {
-      console.error("Token is missing");
     }
   };
 
@@ -107,9 +106,10 @@ const AdminOrders = () => {
       <div className="container mx-auto sm:px-6 lg:px-8">
         <h1 className="text-3xl font-semibold text-secondary mb-4">All Orders</h1>
 
-        {/* Card layout for orders */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-1 gap-6">
-          {orders?.length > 0 ? 
+          {isLoading ? (
+            <div className="col-span-full text-center py-2">Loading...</div>
+          ) : orders?.length > 0 ? (
             orders.map((order, index) => (
               <div key={order._id} className="bg-white shadow-md rounded-lg p-4 flex flex-col sm:justify-between sm:flex-row items-start xl:space-x-5 space-y-4 sm:space-y-0">
                 <div>
@@ -125,7 +125,7 @@ const AdminOrders = () => {
                       <select
                         value={order.status}
                         onChange={(e) => handleStatusChange(e, order._id)}
-                        disabled={order.status === "Cancelled"}
+                        disabled={order.status === "Cancelled" || isLoading}
                         className={`py-1 px-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md focus:ring-2 ${order.status === "Cancelled" ? "cursor-not-allowed bg-gray-200 text-gray-500" : "focus:ring-blue-500"}`}
                       >
                         <option value="Order Placed">Order Placed</option>
@@ -136,6 +136,7 @@ const AdminOrders = () => {
                     </div>
                     <button
                       onClick={() => openModal(order._id)}
+                      disabled={isLoading}
                       className="text-tertiary mt-4 hover:text-red-800"
                     >
                       View Details
@@ -143,13 +144,13 @@ const AdminOrders = () => {
                  </div>
                 </div>
               </div>
-            )) : 
+            ))
+          ) : (
             <div className="col-span-full text-center py-2">No orders yet</div>
-          }
+          )}
         </div>
       </div>
 
-      {/* Order Details Modal */}
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-full sm:w-3/4 lg:w-2/3 max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -190,7 +191,7 @@ const AdminOrders = () => {
             </div>
 
             <div className="flex justify-end">
-              <button onClick={closeModal} className="bg-secondary text-white py-2 px-6 rounded-lg ">
+              <button onClick={closeModal} className="bg-secondary text-white py-2 px-6 rounded-lg">
                 Close
               </button>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import loginImg from "../assets/login.png";
 import Header from '../components/Header';
 import { addCartToUserAPI, addWishlistToUserAPI, loginAPI, registerAPI } from '../services/allAPI';
@@ -6,9 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 import validator from 'validator';
 import { toast } from 'react-toastify';
+import { ShopContext } from '../contexts/ShopContext';
 
 const Login = () => {
-  const navigate = useNavigate();
+  const {navigate} =useContext(ShopContext)
   const [currentState, setCurrentState] = useState("login");
   const [username, setName] = useState("");
   const [email, setEmail] = useState("");

@@ -5,12 +5,14 @@ import { toast } from 'react-toastify';
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchMessages();
   }, []);
 
   const fetchMessages = async () => {
+    setIsLoading(true);
     if (sessionStorage.getItem('token') && sessionStorage.getItem('role') === 'admin') {
       const reqHeader = {
         "Authorization": `Bearer ${sessionStorage.getItem('token')}`,
@@ -20,6 +22,8 @@ const Messages = () => {
         setMessages(response.data);
       } catch (error) {
         console.error('Error fetching messages:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -39,8 +43,10 @@ const Messages = () => {
   return (
     <div className="p-6 max-w-4xl ">
       <h2 className="h2 text-secondary font-semibold mb-6">Messages</h2>
-      {messages.length === 0 ? (
-        <p className=" text-gray-500">No messages available</p>
+      {isLoading ? (
+        <p className="text-gray-500">Loading messages...</p>
+      ) : messages.length === 0 ? (
+        <p className="text-gray-500">No messages available</p>
       ) : (
         <ul className="space-y-4">
           {messages.map((message) => (
