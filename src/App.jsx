@@ -15,10 +15,19 @@ import 'react-toastify/dist/ReactToastify.css';
 import Wishlist from './pages/Wishlist';
 import ProtectedRoute from './contexts/ProtectedRoute';
 import Unauthorised from './pages/Unauthorised';
+import { useEffect, useState } from 'react';
 
 function App() {
-  const isAuthenticated = !!sessionStorage.getItem('token'); // Check if token exists in sessionStorage
-  const userRole = sessionStorage.getItem('role'); // Get the user role from sessionStorage
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    const role = sessionStorage.getItem('role');
+    setIsAuthenticated(!!token); 
+    setUserRole(role);
+  }, []);
+
 
   return (
     <main className="overflow-hidden bg-primary">

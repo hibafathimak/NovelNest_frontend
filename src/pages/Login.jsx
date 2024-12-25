@@ -6,10 +6,9 @@ import { useNavigate } from 'react-router-dom';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 import validator from 'validator';
 import { toast } from 'react-toastify';
-import { ShopContext } from '../contexts/ShopContext';
 
 const Login = () => {
-  const {navigate} =useContext(ShopContext)
+  const navigate =useNavigate()
   const [currentState, setCurrentState] = useState("login");
   const [username, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -67,16 +66,14 @@ const Login = () => {
         sessionStorage.setItem("token", token);
         sessionStorage.setItem("userId", userId);
         sessionStorage.setItem("role", userRole);
-  
-        if (userRole !== "admin") {
-          sessionStorage.setItem("user", JSON.stringify(response.data.user));
-          navigate("/");
+
+        if(userRole === 'admin'){
+           setTimeout(() => navigate('/admin'), 100);
+        return;
         }
-        else if(userRole === 'admin'){
-          navigate('/admin')
-        }
-  
+
         if (userRole === "user") {
+          sessionStorage.setItem("user", JSON.stringify(response.data.user));
           const sessionCart = sessionStorage.getItem("cartItems");
           if (sessionCart) {
             try {
@@ -124,6 +121,7 @@ const Login = () => {
               sessionStorage.removeItem("wishlistItems");
             }
           }
+          navigate("/");
         }
       } else {
         toast.error("Login failed. Invalid credentials.");

@@ -53,7 +53,7 @@ const Dashboard = () => {
             const amount = order.amount || 0;
             return sum + amount;
           }, 0);
-        setTotalSales(totalSalesAmount);
+        setTotalSales(totalSalesAmount+100);
 
         const bookPurchaseMap = {};
         orders.forEach((order) => {
