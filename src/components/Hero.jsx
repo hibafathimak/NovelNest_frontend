@@ -48,7 +48,7 @@ const Hero = () => {
             read today!
           </p>
           <div className="mt-6">
-            <Link className="btn-secondaryOne" to={'/store'}>
+            <Link className="btn-secondaryOne" to={'/shop'}>
               Explore Now
             </Link>
           </div>
