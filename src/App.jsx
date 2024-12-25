@@ -22,10 +22,16 @@ function App() {
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    const role = sessionStorage.getItem('role');
-    setIsAuthenticated(!!token); 
-    setUserRole(role);
+    const checkAuth = () => {
+      const token = sessionStorage.getItem('token');
+      const role = sessionStorage.getItem('role');
+      setIsAuthenticated(!!token);
+      setUserRole(role);
+    };
+
+    checkAuth();
+    window.addEventListener('auth-change', checkAuth);
+    return () => window.removeEventListener('auth-change', checkAuth);
   }, []);
 
 

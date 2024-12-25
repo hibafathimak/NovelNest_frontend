@@ -67,6 +67,8 @@ const Login = () => {
         sessionStorage.setItem("userId", userId);
         sessionStorage.setItem("role", userRole);
 
+        window.dispatchEvent(new Event('auth-change'));
+
         if(userRole === 'admin'){
            setTimeout(() => navigate('/admin'), 100);
         return;
