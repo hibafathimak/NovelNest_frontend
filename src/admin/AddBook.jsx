@@ -4,8 +4,10 @@ import { TbTrash } from "react-icons/tb";
 import { FaPlus } from "react-icons/fa6";
 import { createProductAPI } from '../services/allAPI';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const AddBook = () => {
+  const navigate = useNavigate()
   const [productName, setProductName] = useState('');
   const [author, setAuthor] = useState('');
   const [price, setPrice] = useState('');
@@ -21,7 +23,7 @@ const AddBook = () => {
     if (file && file.type.startsWith('image/')) {
       setImage(file);
     } else {
-      toast('Please upload a valid image file.');
+      toast.error('Please upload a valid image file.');
     }
   };
 
@@ -52,7 +54,7 @@ const AddBook = () => {
         try {
           const result = await createProductAPI(formData, reqHeader);
           if (result.status == 200) {
-            toast.success("Product added successfully!");
+            toast.success("Book added successfully!"); 
             setProductName('');
             setAuthor('');
             setPrice('');
@@ -62,6 +64,7 @@ const AddBook = () => {
             setStock('in stock');
             setImage(null);
             setPopular(false);
+            navigate('/admin/books')
           } else {
             toast.error(result.response.data);
           }
@@ -77,12 +80,12 @@ const AddBook = () => {
 
   return (
     <div className="max-w-3xl p-5">
-      <h1 className="text-secondary font-bold text-4xl mb-5">Add A New Product</h1>
+      <h1 className="text-secondary font-bold text-4xl mb-5">Add A New Book</h1>
 
       <form onSubmit={handleSubmit}>
-        {/* Product Name */}
+        {/* Book Name */}
         <div className="mb-4">
-          <label className="text-lg font-semibold">Product Name</label>
+          <label className="text-lg font-semibold">Book Name</label>
           <input
             type="text"
             value={productName}
@@ -92,9 +95,9 @@ const AddBook = () => {
           />
         </div>
 
-        {/* Product Author */}
+        {/*  Author */}
         <div className="mb-4">
-          <label className="text-lg font-semibold">Product Author</label>
+          <label className="text-lg font-semibold"> Author</label>
           <input
             type="text"
             value={author}
@@ -104,9 +107,9 @@ const AddBook = () => {
           />
         </div>
 
-        {/* Product Description */}
+        {/*  Description */}
         <div className="mb-4">
-          <label className="text-lg font-semibold">Product Description</label>
+          <label className="text-lg font-semibold"> Description</label>
           <textarea
             rows={2}
             value={description}
@@ -116,9 +119,9 @@ const AddBook = () => {
           />
         </div>
 
-        {/* Product About */}
+        {/*  About */}
         <div className="mb-4">
-          <label className="text-lg font-semibold">Product About</label>
+          <label className="text-lg font-semibold"> About</label>
           <textarea
             rows={5}
             value={about}
@@ -164,9 +167,9 @@ const AddBook = () => {
           </select>
         </div>
 
-        {/* Product Price */}
+        {/*  Price */}
         <div className="mb-4">
-          <label className="text-lg font-semibold">Product Price</label>
+          <label className="text-lg font-semibold"> Price</label>
           <input
             type="number"
             value={price}
@@ -222,7 +225,7 @@ const AddBook = () => {
         <div className="mt-6 flex justify-end gap-4">
           <button
             type="submit"
-            className="flex items-center px-6 py-3 bg-slate-900 text-white rounded-full hover:bg-purple-950 transition-all"
+            className="flex items-center px-6 py-3 bg-secondary text-white rounded-full hover:bg-gray-600 transition-all"
           >
             <FaPlus className="mr-2" />
             Add Book

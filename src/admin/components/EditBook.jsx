@@ -264,7 +264,7 @@ const EditBook = () => {
             </button>
             <button
               type="submit"
-              className="flex items-center px-6 py-3 bg-slate-900 text-white rounded-full hover:bg-purple-950 transition-all"
+              className="flex items-center px-6 py-3 bg-secondary text-white rounded-full hover:bg-gray-600 transition-all"
             >
               <FaSave className="mr-2" />
               Save
