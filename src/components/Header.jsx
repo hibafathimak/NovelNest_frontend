@@ -48,7 +48,7 @@ const Header = () => {
             <div className={`${active ? 'bg-white py-2.5' : 'bg-primary py-3'} px-4 lg:px-6 flex items-center justify-between`}>
                 <CgMenuLeft
                     onClick={toggleMenu}
-                    className="text-2xl sm:text-3xl xl:hidden cursor-pointer text-slate-700 hover:text-primary transition-colors"
+                    className="text-2xl sm:text-3xl xl:hidden cursor-pointer text-secondary hover:text-slate-700 transition-colors"
                 />
 
                 <Link to="/" className="flex items-center">

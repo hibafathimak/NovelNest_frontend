@@ -31,7 +31,7 @@ const Cart = () => {
 
     return (
        <>
-            <section className='max-padd-container'>
+            <section className='max-padd-container mb-10'>
                 <div className='pt-28 h-screen'>
                     <Title title1={'Cart '} title2={'Items'} title1Styles={'h1'} paraStyles={'hidden'} />
                     
