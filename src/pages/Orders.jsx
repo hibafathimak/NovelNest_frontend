@@ -88,82 +88,106 @@ const OrdersComponent = () => {
       .filter(order => order.status === filter)
       .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-if (loading) return <div>Loading...</div>;
+      if (loading) return <div>Loading...</div>;
 
-return (
-  <>
-    <div className="bg-primary pt-24 px-10 space-y-6 min-h-screen">
-      <Title title1="Orders " title2="List" paraStyles="hidden" titleStyles="h3" />
+      return (
+        <>
+          <div className="bg-primary pt-24 px-10 space-y-6 min-h-screen">
+            <Title title1="Orders " title2="List" paraStyles="hidden" titleStyles="h3" />
       
-      <div className="mb-4">
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="py-2 px-4 border rounded text-gray-700"
-        >
-          <option value="All">All</option>
-          <option value="Order Placed">Order Placed</option>
-          <option value="Shipped">Shipped</option>
-          <option value="Delivered">Delivered</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
-      </div>
-  
-      {filteredOrders.length === 0 ? (
-        <div className="text-center text-gray-500">No orders available.</div>
-      ) : (
-        filteredOrders.map(({ _id, items, paymentMethod, status, date }, index) => (
-          <div key={index} className="bg-white shadow-lg rounded-lg p-6 mb-4">
-            <div className="font-bold text-gray-800 text-xl">Order Date: {new Date(date).toLocaleDateString()}</div>
-            <div className="flexBetween mt-2">
-              <p className="text-gray-500">Payment Method: {paymentMethod}</p>
-              <p className="text-gray-500">
-                <span
-                  className={`px-4 py-3 rounded-full text-white text-sm ${
-                    status === 'Order Placed' ? 'bg-blue-500' :
-                    status === 'Delivered' ? 'bg-green-500' :
-                    status === 'Cancelled' ? 'bg-gray-500' : 'bg-orange-500'
-                  }`}
-                >
-                  {status}
-                </span>
-              </p>
-            </div>
-            <div className="mt-4">
-              {Object.entries(items).map(([itemId, quantity]) => {
-                const bookDetails = bookDetailsMap[itemId];
-                if (quantity > 0 && bookDetails) {
-                  return (
-                    <div key={itemId} className="flex items-center justify-between p-4 bg-gray-100 rounded-lg mb-4">
-                      <div className="flex items-center space-x-4">
-                        <img src={bookDetails.image || '/placeholder-book.jpg'} alt={bookDetails.title || 'Book cover'} className="w-16 object-cover rounded" />
-                        <div>
-                          <h3 className="font-bold text-gray-800 text-lg">{bookDetails.name || 'Loading...'}</h3>
-                          <p className="text-gray-500 text-sm">Price: ${bookDetails.price || 'N/A'}</p>
-                          <p className="text-gray-500 text-sm">Quantity: {quantity}</p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-                return null;
-              })}
-            </div>
-            {status === "Order Placed" && (
-              <button
-                onClick={() => cancelOrder(_id)}
-                className="btn-secondary h-10"
+            <div className="mb-4">
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="py-2 px-4 border rounded text-gray-700"
               >
-                Cancel
-              </button>
+                <option value="All">All</option>
+                <option value="Order Placed">Order Placed</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+      
+            {orders.length === 0 ? (
+              <div className="text-center text-gray-600">No orders available.</div>
+            ) : (
+              <>
+                {filteredOrders.length === 0 ? (
+                  <div className="text-center text-gray-500">No orders match the selected filter.</div>
+                ) : (
+                  filteredOrders.map(({ _id, items, paymentMethod, status, date }, index) => (
+                    <div key={index} className="bg-white shadow-lg rounded-lg p-6 mb-4">
+                      <div className="font-bold text-gray-800 text-xl">
+                        Order Date: {new Date(date).toLocaleDateString()}
+                      </div>
+                      <div className="flexBetween mt-2">
+                        <p className="text-gray-500">Payment Method: {paymentMethod}</p>
+                        <p className="text-gray-500">
+                          <span
+                            className={`px-4 py-3 rounded-full text-white text-sm ${
+                              status === 'Order Placed'
+                                ? 'bg-cyan-600'
+                                : status === 'Delivered'
+                                ? 'bg-emerald-800'
+                                : status === 'Cancelled'
+                                ? 'bg-gray-500'
+                                : 'bg-orange-600'
+                            }`}
+                          >
+                            {status}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="mt-4">
+                        {Object.entries(items).map(([itemId, quantity]) => {
+                          const bookDetails = bookDetailsMap[itemId];
+                          if (quantity > 0 && bookDetails) {
+                            return (
+                              <div
+                                key={itemId}
+                                className="flex items-center justify-between p-4 bg-gray-100 rounded-lg mb-4"
+                              >
+                                <div className="flex items-center space-x-4">
+                                  <img
+                                    src={bookDetails.image || '/placeholder-book.jpg'}
+                                    alt={bookDetails.title || 'Book cover'}
+                                    className="w-16 object-cover rounded"
+                                  />
+                                  <div>
+                                    <h3 className="font-bold text-gray-800 text-lg">
+                                      {bookDetails.name || 'Loading...'}
+                                    </h3>
+                                    <p className="text-gray-500 text-sm">
+                                      Price: ${bookDetails.price || 'N/A'}
+                                    </p>
+                                    <p className="text-gray-500 text-sm">Quantity: {quantity}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+                      {status === 'Order Placed' && (
+                        <button
+                          onClick={() => cancelOrder(_id)}
+                          className="btn-secondary h-10"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </>
             )}
           </div>
-        ))
-      )}
-    </div>
-    <Footer/>
-  </>
-);
+          <Footer />
+        </>
+      );
+      
 
 };
 
