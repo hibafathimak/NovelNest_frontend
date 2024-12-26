@@ -82,7 +82,7 @@ const BookList = () => {
     <div className="p-4 sm:p-6">
       <h2 className="text-4xl font-semibold text-secondary mb-4 sm:mb-6">Book List</h2>
 
-      <div className="inline-flex items-center justify-center bg-white overflow-hidden w-1/3 rounded-full p-2 px-5 mb-4">
+      <div className="inline-flex items-center justify-center bg-white overflow-hidden w-full lg:w-1/3 rounded-full p-2 px-5 mb-4">
         <div className='text-lg cursor-pointer'><RiSearch2Line /></div>
 
         <input
