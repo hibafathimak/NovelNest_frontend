@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { TbShoppingBagPlus } from 'react-icons/tb';
-import { RiHeartLine } from 'react-icons/ri';
-import { RiEdit2Line, RiDeleteBinLine } from 'react-icons/ri';
+import { RiHeartLine, RiEdit2Line, RiDeleteBinLine } from 'react-icons/ri';
 import { ShopContext } from '../contexts/ShopContext';
 import Item from '../components/Item';
 import Footer from '../components/Footer';
@@ -17,7 +16,7 @@ const ViewBook = () => {
   const [reviews, setReviews] = useState([]);
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [editingReview, setEditingReview] = useState(null);
 
   const user = JSON.parse(sessionStorage.getItem('user'));
@@ -27,44 +26,44 @@ const ViewBook = () => {
   useEffect(() => {
     fetchBookData();
     fetchReviews();
-  }, [bookId, reviews]);
+    
+    window.scrollTo(0,0);
+  }, [bookId]);
 
   const fetchBookData = async () => {
-    setLoading(true);
     try {
       const response = await getSingleProductAPI(bookId);
       if (response.status === 200) setBook(response.data);
       else toast.error('Failed to load book details.');
-    } catch (error) {
+    } catch {
       toast.error('Failed to load book details.');
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
   const fetchReviews = async () => {
-    setLoading(true);
     try {
       const response = await getAllReviewsAPI(bookId);
       if (response.status === 200) setReviews(response.data);
-    } catch (error) {
+    } catch {
       toast.error('Failed to load reviews');
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
-    if (!reviewText.trim()) return toast.error("Please write a review.");
-    if (rating === 0) return toast.error("Please select a rating.");
+    if (!reviewText.trim()) return toast.error('Please write a review.');
+    if (rating === 0) return toast.error('Please select a rating.');
     if (!token) return toast.error('Please log in to submit reviews!');
 
     const reviewData = { bookId, user: userId, username: user.username, comment: reviewText, rating };
     const reqHeader = { Authorization: `Bearer ${token}` };
 
     try {
-      const response = editingReview ? await updateReviewAPI(editingReview._id, reviewData, reqHeader) : await createReviewAPI(reviewData, reqHeader);
+      const response = editingReview
+        ? await updateReviewAPI(editingReview._id, reviewData, reqHeader)
+        : await createReviewAPI(reviewData, reqHeader);
       if (response.status === 200) {
         toast.success(editingReview ? 'Review updated!' : 'Review submitted!');
         setReviewText('');
@@ -98,9 +97,9 @@ const ViewBook = () => {
     addToWishlist(book._id);
   };
 
-  if (loading || !book) return <div>Loading...</div>;
+  if (loading || !book) return <div className='mt-40 text-gray-600 h-screen text-center'>Loading...</div>;
 
-  const relatedBooks = books.filter(b => b.category === book.category && b._id !== bookId);
+  const relatedBooks = books.filter((b) => b.category === book.category && b._id !== bookId);
   const quantityInCart = cartItems[bookId] || 0;
   const stockStatusClass = {
     'in stock': 'text-green-600',
@@ -110,7 +109,7 @@ const ViewBook = () => {
 
   return (
     <>
-      <div className="max-w-6xl mx-auto mt-1 px-4 py-20">
+      <div className="max-w-6xl mx-auto min-h-screen px-4 py-20">
         <div className="flex flex-col lg:flex-row gap-12 bg-white p-10 rounded-lg shadow-lg">
           <div className="lg:w-2/5 flex justify-center">
             <img className="w-full h-auto rounded-lg shadow-md" src={book.image} alt={book.name} />
@@ -119,24 +118,52 @@ const ViewBook = () => {
             <h1 className="text-3xl font-bold text-secondary">{book.name}</h1>
             <p className="text-base text-gray-600 leading-relaxed">{book.description}</p>
             <div className="text-gray-700 space-y-3">
-              <p className="text-base"><strong>Category:</strong> {book.category}</p>
-              <p className="text-base"><strong>Author:</strong> {book.author}</p>
-              <p className="text-base"><strong>About:</strong> {book.about}</p>
-              <p className="text-base"><strong>Stock:</strong><span className={`font-bold ${stockStatusClass[book.stock]}`}>{book.stock}</span></p>
+              <p className="text-base">
+                <strong>Category:</strong> {book.category}
+              </p>
+              <p className="text-base">
+                <strong>Author:</strong> {book.author}
+              </p>
+              <p className="text-base">
+                <strong>About:</strong> {book.about}
+              </p>
+              <p className="text-base">
+                <strong>Stock:</strong>
+                <span className={`font-bold ${stockStatusClass[book.stock]}`}>{book.stock}</span>
+              </p>
             </div>
             <hr />
             <div className="flex justify-between items-center">
-              <h3 className="text-2xl font-semibold text-secondary">{currency}{book.price.toFixed(2)}</h3>
+              <h3 className="text-2xl font-semibold text-secondary">
+                {currency}
+                {book.price.toFixed(2)}
+              </h3>
               <div className="flex items-center space-x-4">
-                <button onClick={() => updateQuantity(book._id, Math.max(0, quantityInCart - 1))} className="bg-gray-200 hover:bg-gray-300 w-10 h-10 flex items-center justify-center rounded-full" disabled={quantityInCart === 0 || book.stock === 'out of stock'}>-</button>
+                <button
+                  onClick={() => updateQuantity(book._id, Math.max(0, quantityInCart - 1))}
+                  className="bg-gray-200 hover:bg-gray-300 w-10 h-10 flex items-center justify-center rounded-full"
+                  disabled={quantityInCart === 0 || book.stock === 'out of stock'}
+                >
+                  -
+                </button>
                 <span className="text-lg font-semibold">{quantityInCart}</span>
-                <button onClick={() => updateQuantity(book._id, quantityInCart + 1)} className="bg-gray-200 hover:bg-gray-300 w-10 h-10 flex items-center justify-center rounded-full" disabled={book.stock === 'out of stock'}>+</button>
+                <button
+                  onClick={() => updateQuantity(book._id, quantityInCart + 1)}
+                  className="bg-gray-200 hover:bg-gray-300 w-10 h-10 flex items-center justify-center rounded-full"
+                  disabled={book.stock === 'out of stock'}
+                >
+                  +
+                </button>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row justify-between items-center mt-4 space-y-4 sm:space-y-0 sm:space-x-4">
               <button
                 onClick={() => addToCart(book._id)}
-                className={`px-6 py-3 w-full sm:w-auto rounded-lg flex items-center justify-center space-x-2 shadow-lg ${book.stock === 'out of stock' ? 'bg-gray-400 cursor-not-allowed' : 'bg-secondary text-white hover:bg-secondary-dark'}`}
+                className={`px-6 py-3 w-full sm:w-auto rounded-lg flex items-center justify-center space-x-2 shadow-lg ${
+                  book.stock === 'out of stock'
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-secondary text-white hover:bg-secondary-dark'
+                }`}
                 disabled={book.stock === 'out of stock'}
               >
                 <TbShoppingBagPlus className="text-xl" />
@@ -150,40 +177,67 @@ const ViewBook = () => {
                 <span>Add to Wishlist</span>
               </button>
             </div>
-
           </div>
         </div>
 
         <div className="mt-12">
           <h3 className="text-2xl font-bold text-gray-800 mb-6">Reviews</h3>
-          {loading ? <div className="text-center my-6">Loading reviews...</div> : (
-            reviews.length > 0 ? reviews.map(review => (
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
               <div key={review._id} className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2 mt-4">
                 <p className="text-sm font-semibold">{review.username}</p>
                 <p className="text-gray-700">{review.comment}</p>
                 <p className="text-yellow-500">{'★'.repeat(review.rating)}</p>
                 {review.user === userId && (
                   <div className="flex space-x-4">
-                    <button onClick={() => { setEditingReview(review); setReviewText(review.comment); setRating(review.rating); }} className="text-secondary">
+                    <button
+                      onClick={() => {
+                        setEditingReview(review);
+                        setReviewText(review.comment);
+                        setRating(review.rating);
+                      }}
+                      className="text-secondary"
+                    >
                       <RiEdit2Line className="inline-block" />
                     </button>
-                    <button onClick={() => handleDeleteReview(review._id)} className="text-tertiary">
+                    <button
+                      onClick={() => handleDeleteReview(review._id)}
+                      className="text-tertiary"
+                    >
                       <RiDeleteBinLine className="inline-block" />
                     </button>
                   </div>
                 )}
               </div>
-            )) : <p>No reviews yet. Be the first to leave one!</p>
+            ))
+          ) : (
+            <p>No reviews yet. Be the first to leave one!</p>
           )}
 
           <form onSubmit={handleReviewSubmit} className="mt-6 space-y-4">
-            <textarea className="w-full p-3 border rounded-lg" placeholder="Write your review..." value={reviewText} onChange={(e) => setReviewText(e.target.value)} rows="4" />
+            <textarea
+              className="w-full p-3 border rounded-lg"
+              placeholder="Write your review..."
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+              rows="4"
+            />
             <div className="flex items-center space-x-4">
-              <select className="p-2 border rounded-lg" value={rating} onChange={(e) => setRating(Number(e.target.value))}>
+              <select
+                className="p-2 border rounded-lg"
+                value={rating}
+                onChange={(e) => setRating(Number(e.target.value))}
+              >
                 <option value="0">Rate</option>
-                {[1, 2, 3, 4, 5].map(r => <option key={r} value={r}>{r} Star{r > 1 && 's'}</option>)}
+                {[1, 2, 3, 4, 5].map((r) => (
+                  <option key={r} value={r}>
+                    {r} Star{r > 1 && 's'}
+                  </option>
+                ))}
               </select>
-              <button type="submit" className="px-6 py-2 bg-secondary text-white rounded-lg">{editingReview ? 'Update Review' : 'Submit'}</button>
+              <button type="submit" className="px-6 py-2 bg-secondary text-white rounded-lg">
+                {editingReview ? 'Update Review' : 'Submit'}
+              </button>
             </div>
           </form>
         </div>
@@ -192,7 +246,9 @@ const ViewBook = () => {
           <div className="mt-16">
             <h3 className="text-2xl font-bold text-gray-800 mb-6">Related Books</h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {relatedBooks.map((relatedBook) => <Item key={relatedBook._id} book={relatedBook} />)}
+              {relatedBooks.map((relatedBook) => (
+                <Item key={relatedBook._id} book={relatedBook} />
+              ))}
             </div>
           </div>
         )}
