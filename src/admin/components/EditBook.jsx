@@ -103,7 +103,7 @@ const EditBook = () => {
           const result = await editProductAPI(id, formData, reqHeader);
           if (result.status === 200) {
             toast.success('Book updated successfully!');
-            navigate('/books');
+            navigate('/admin/books');
           } else {
             toast.error('Failed to update the book.');
           }
