@@ -83,6 +83,7 @@ const ViewBook = () => {
       const response = await deleteReviewAPI(reviewId, reqHeader);
       if (response.status === 200) {
         toast.success('Review deleted!');
+        setReviews((prevReviews) => prevReviews.filter((review) => review._id !== reviewId))
         setReviewText('');
         setRating(0);
         setEditingReview(null);
